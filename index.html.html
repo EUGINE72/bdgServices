@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bdgservices.html/Hrsystem</title>
+<style>
+:root{
+  --green:#0b6b4f; --green-dark:#07493a; --green-light:#e7f4ef;
+  --gold:#c9a227; --ink:#1c2b26; --muted:#6b7f78; --line:#dde8e3;
+  --bg:#f4f7f5; --card:#ffffff; --red:#b23b3b; --amber:#b97f0e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+#app{display:flex;min-height:100vh}
+aside{width:240px;background:linear-gradient(180deg,var(--green-dark),var(--green));color:#fff;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column}
+.brand{padding:22px 18px;border-bottom:1px solid rgba(255,255,255,.15)}
+.brand h1{font-size:17px;letter-spacing:.5px}
+.brand p{font-size:11px;opacity:.75;margin-top:4px;text-transform:uppercase;letter-spacing:2px}
+nav{flex:1;padding:14px 0;overflow-y:auto}
+nav button{display:flex;width:100%;text-align:left;padding:11px 20px;background:none;border:none;color:#d9ebe4;font-size:14px;cursor:pointer;border-left:4px solid transparent}
+nav button:hover{background:rgba(255,255,255,.08);color:#fff}
+nav button.active{background:rgba(255,255,255,.14);color:#fff;border-left-color:var(--gold);font-weight:600}
+.side-foot{padding:14px 18px;font-size:11px;opacity:.7;border-top:1px solid rgba(255,255,255,.15)}
+main{margin-left:240px;flex:1;padding:26px 30px 60px}
+header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+header.top h2{font-size:22px}
+.savestate{font-size:12px;color:var(--muted)}
+.savestate b{color:var(--green)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h3{font-size:15px;margin-bottom:14px;color:var(--green-dark);border-bottom:1px solid var(--line);padding-bottom:8px}
+.grid{display:grid;gap:14px}
+.stats{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.stat .label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.stat .value{font-size:24px;font-weight:700;color:var(--green-dark);margin-top:6px}
+.stat .sub{font-size:12px;color:var(--muted);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--green-light);color:var(--green-dark);text-align:left;padding:9px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+tr:hover td{background:#f2f8f5}
+input,select,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-family:inherit;background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green)}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px}
+.btn{padding:9px 16px;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-weight:600}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-dark)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-outline{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.btn-red{background:#fff;border:1px solid #ecc;color:var(--red)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.view{display:none}
+.view.active{display:block}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:var(--green-light);color:var(--green)}
+.badge-amber{background:#fdf3df;color:var(--amber)}
+.badge-red{background:#fbe7e7;color:var(--red)}
+.badge-purple{background:#f0e8f7;color:#6a4a93}
+.right{text-align:right}.center{text-align:center}
+.money{font-variant-numeric:tabular-nums}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:13px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}aside{width:200px}main{margin-left:200px}}
+.notice{background:var(--green-light);border:1px solid #bfe0d3;color:var(--green-dark);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px}
+#printArea{display:none}
+@media print{
+  body{background:#fff}
+  #app{display:none}
+  #printArea{display:block;font-family:Arial,sans-serif;color:#000}
+  .pslip{border:2px solid #000;padding:26px;max-width:700px;margin:0 auto}
+  .pslip table{font-size:12px}
+  .pslip th{background:#eee;color:#000;border:1px solid #999}
+  .pslip td{border:1px solid #999;padding:6px 8px}
+}
+.pslip h1{font-size:19px;text-align:center}
+.pslip .co{text-align:center;font-size:13px;margin-bottom:4px}
+.pslip .ttl{text-align:center;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:8px 0 14px;border-top:1px solid #000;border-bottom:1px solid #000;padding:5px}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside>
+    <div class="brand"><h1>BWAMUMPU GENERAL DEALERS</h1><p>HR SYSTEM</p></div>
+    <nav id="nav"></nav>
+    <div class="side-foot">Capacity: <span id="capLabel">0 / 100</span> employees<br>Data stored locally in browser</div>
+  </aside>
+  <main>
+    <header class="top">
+      <h2 id="pageTitle">Dashboard</h2>
+      <span class="savestate">Auto-save: <b>ON</b> (localStorage) · Last saved: <span id="lastSaved">—</span></span>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="view" id="view-dashboard">
+      <div class="actions">
+        <label style="margin:0">Payroll month</label>
+        <input type="month" id="dashMonth" onchange="renderDashboard()">
+      </div>
+      <div class="grid stats" id="dashStats"></div>
+      <div class="two-col">
+        <div class="card"><h3>Recent Payslips</h3><div id="dashRecent"></div></div>
+        <div class="card"><h3>Outstanding Recoveries</h3><div id="dashAdv"></div></div>
+      </div>
+    </section>
+
+    <!-- EMPLOYEES -->
+    <section class="view" id="view-employees">
+      <div class="card">
+        <h3>Register New Employee</h3>
+        <div class="form-row">
+          <div><label>Full name *</label><input id="eName" placeholder="e.g. Mwansa Chileshe"></div>
+          <div><label>NRC Number *</label><input id="eNRC" placeholder="e.g. 123456/78/9"></div>
+          <div><label>SSN / NAPSA No. *</label><input id="eSSN" placeholder="e.g. 2001234567"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Position *</label><input id="ePos" placeholder="e.g. Accounts Clerk"></div>
+          <div><label>Basic Salary (ZMW) *</label><input id="eBasic" type="number" min="0" step="0.01" placeholder="e.g. 4500"></div>
+          <div><label>Date Hired</label><input id="eHired" type="date"></div>
+        </div>
+        <button class="btn btn-green" onclick="addEmployee()">+ Add Employee</button>
+      </div>
+      <div class="card"><h3>Employee Register (<span id="empCount">0</span>/50)</h3><div id="empTable"></div></div>
+    </section>
+
+    <!-- PAYROLL -->
+    <section class="view" id="view-payroll">
+      <div class="notice">Statutory &amp; standard deductions — NAPSA: <b>5%</b> · NHIMA: <b>1%</b> of basic. Allowances — Housing: <b>30%</b> of basic · Lunch: <b>ZMW 180</b> · Transport: <b>ZMW 200</b>. Overtime at <b><span id="otRateLbl">1.5</span>×</b> hourly rate (Basic ÷ 26 days ÷ 8 hrs). Advances and charges (shortages / contamination / property loss) are auto-recovered up to the recovery cap in Settings.</div>
+      <div class="actions">
+        <label style="margin:0">Payroll month</label>
+        <input type="month" id="payMonth" onchange="renderPayroll()">
+        <button class="btn btn-green" onclick="runPayroll()">▶ Run Payroll</button>
+        <button class="btn btn-gold" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn btn-outline" onclick="printPayrollSummary()">🖨 Print Summary</button>
+      </div>
+      <div class="card"><h3>Payroll Register</h3><div id="payrollTable"></div></div>
+    </section>
+
+    <!-- ADVANCES -->
+    <section class="view" id="view-advances">
+      <div class="card">
+        <h3>Record Salary Advance</h3>
+        <div class="form-row">
+          <div><label>Employee *</label><select id="aEmp"></select></div>
+          <div><label>Date *</label><input id="aDate" type="date"></div>
+          <div><label>Amount (ZMW) *</label><input id="aAmt" type="number" min="0" step="0.01"></div>
+          <div><label>Note</label><input id="aNote" placeholder="Reason"></div>
+        </div>
+        <button class="btn btn-green" onclick="addAdvance()">+ Record Advance</button>
+      </div>
+      <div class="card"><h3>Salary Advances Register</h3><div id="advTable"></div></div>
+    </section>
+
+    <!-- CHARGES -->
+    <section class="view" id="view-charges">
+      <div class="notice">Charge deductions are work-related losses billed to an employee — e.g. <b>stock shortages</b>, <b>contamination</b> of materials, or <b>loss of company property</b>. Recorded charges are <b>automatically deducted</b> from the employee's payslip until fully recovered.</div>
+      <div class="card">
+        <h3>Record a Charge Deduction</h3>
+        <div class="form-row">
+          <div><label>Employee *</label><select id="cEmp"></select></div>
+          <div><label>Charge Type *</label><select id="cType">
+            <option>Shortages</option>
+            <option>Contamination</option>
+            <option>Loss of Company Property</option>
+            <option>Other Charge</option>
+          </select></div>
+          <div><label>Date *</label><input id="cDate" type="date"></div>
+          <div><label>Amount (ZMW) *</label><input id="cAmt" type="number" min="0" step="0.01" placeholder="e.g. 350"></div>
+        </div>
+        <div class="form-row"><div><label>Details / Note</label><input id="cNote" placeholder="e.g. Missing 2 bags of stock during stock-take"></div></div>
+        <button class="btn btn-green" onclick="addCharge()">+ Record Charge</button>
+      </div>
+      <div class="card"><h3>Charges Deductions Register</h3><div id="chgTable"></div></div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section class="view" id="view-attendance">
+      <div class="actions">
+        <label style="margin:0">Month</label>
+        <input type="month" id="attMonth" onchange="renderAttendance()">
+      </div>
+      <div class="card"><h3>Hours &amp; Attendance</h3><div id="attTable"></div></div>
+    </section>
+
+    <!-- LEAVE -->
+    <section class="view" id="view-leave">
+      <div class="card">
+        <h3>Record Leave</h3>
+        <div class="form-row">
+          <div><label>Employee *</label><select id="lEmp"></select></div>
+          <div><label>Type *</label><select id="lType"><option>Annual</option><option>Sick</option><option>Maternity</option><option>Paternity</option><option>Compassionate</option><option>Unpaid</option></select></div>
+          <div><label>From *</label><input id="lFrom" type="date"></div>
+          <div><label>To *</label><input id="lTo" type="date"></div>
+        </div>
+        <button class="btn btn-green" onclick="addLeave()">+ Record Leave</button>
+      </div>
+      <div class="card"><h3>Leave Records</h3><div id="leaveTable"></div></div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="view" id="view-reports">
+      <div class="card">
+        <h3>Submit Work Report</h3>
+        <div class="form-row">
+          <div><label>Employee *</label><select id="rEmp"></select></div>
+          <div><label>Date *</label><input id="rDate" type="date"></div>
+          <div><label>Title *</label><input id="rTitle" placeholder="Report title"></div>
+        </div>
+        <div class="form-row"><div><label>Summary *</label><textarea id="rBody" rows="3" style="width:100%" placeholder="Work done, progress, issues..."></textarea></div></div>
+        <button class="btn btn-green" onclick="addReport()">+ Submit Report</button>
+      </div>
+      <div class="card"><h3>Work Report Registry</h3><div id="reportTable"></div></div>
+    </section>
+
+    <!-- PAYSLIPS -->
+    <section class="view" id="view-payslips">
+      <div class="actions">
+        <label style="margin:0">Month</label>
+        <input type="month" id="psMonth" onchange="renderPayslips()">
+      </div>
+      <div class="card"><h3>Individual Payslips</h3><div id="psTable"></div></div>
+    </section>
+
+    <!-- BACKUP -->
+    <section class="view" id="view-backup">
+      <div class="two-col">
+        <div class="card">
+          <h3>Payroll Settings</h3>
+          <div class="form-row">
+            <div><label>Max recovery deduction (% of gross, covers advances + charges)</label><input id="sMaxAdv" type="number" min="1" max="100"></div>
+            <div><label>Overtime multiplier</label><input id="sOtRate" type="number" min="1" step="0.1"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Work days / month</label><input id="sWorkDays" type="number" min="1" max="31"></div>
+            <div><label>Hours / day</label><input id="sHoursDay" type="number" min="1" max="24"></div>
+          </div>
+          <button class="btn btn-green" onclick="saveSettings()">Save Settings</button>
+        </div>
+        <div class="card">
+          <h3>Data Backup &amp; Restore</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:14px">All records are saved automatically to your browser's local storage. Download a backup file for safekeeping, or restore from a previous backup.</p>
+          <div class="actions">
+            <button class="btn btn-gold" onclick="downloadBackup()">⬇ Download Backup (JSON)</button>
+            <label class="btn btn-outline" style="cursor:pointer">⬆ Restore from Backup<input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreBackup(event)"></label>
+          </div>
+          <div class="actions" style="margin-top:14px">
+            <button class="btn btn-red" onclick="wipeData()">🗑 Erase All Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="printArea"></div>
+
+<script>
+const LS_KEY='mc_hr_autopilot_v1';
+const MAX_EMP=50;
+const LUNCH=180, TRANSPORT=200, NAPSA_RATE=0.05, NHIMA_RATE=0.01, HOUSING_RATE=0.30;
+
+const DEFAULTS={employees:[],advances:[],charges:[],leave:[],reports:[],payslips:[],attendance:{},
+ settings:{maxAdvPct:40,otRate:1.5,workDays:26,hoursPerDay:8}};
+
+let state=load();
+
+function load(){
+  try{const raw=localStorage.getItem(LS_KEY);if(raw){const s=JSON.parse(raw);return Object.assign({},DEFAULTS,s,{settings:Object.assign({},DEFAULTS.settings,s.settings||{})});}}catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function save(){
+  localStorage.setItem(LS_KEY,JSON.stringify(state));
+  document.getElementById('lastSaved').textContent=new Date().toLocaleTimeString();
+  document.getElementById('capLabel').textContent=state.employees.length+' / 50';
+}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const money=n=>'ZMW '+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const curMonth=()=>new Date().toISOString().slice(0,7);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const empById=id=>state.employees.find(e=>e.id===id);
+function empOptions(sel){return state.employees.map(e=>'<option value="'+e.id+'">'+esc(e.name)+'</option>').join('')||'<option value="">— no employees —</option>';}
+
+/* ---------- NAVIGATION ---------- */
+const VIEWS=[['dashboard','📊 Dashboard'],['employees','👥 Employees'],['payroll','💰 Payroll'],['advances','💵 Advances'],['charges','⚖️ Charges'],['attendance','🕒 Attendance'],['leave','🌴 Leave'],['reports','📋 Reports'],['payslips','🧾 Payslips'],['backup','⚙ Backup & Settings']];
+function buildNav(){
+  document.getElementById('nav').innerHTML=VIEWS.map(v=>'<button data-v="'+v[0]+'" onclick="showView(\''+v[0]+'\')">'+v[1]+'</button>').join('');
+}
+function showView(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
+  document.getElementById('pageTitle').textContent=VIEWS.find(x=>x[0]===v)[1].replace(/^[^ ]+ /,'');
+  ({dashboard:renderDashboard,employees:renderEmployees,payroll:renderPayroll,advances:renderAdvances,charges:renderCharges,attendance:renderAttendance,leave:renderLeave,reports:renderReports,payslips:renderPayslips,backup:renderBackup})[v]();
+}
+
+/* ---------- EMPLOYEES ---------- */
+function addEmployee(){
+  if(state.employees.length>=MAX_EMP){alert('Capacity reached: maximum of '+MAX_EMP+' employees.');return;}
+  const name=eName.value.trim(),nrc=eNRC.value.trim(),ssn=eSSN.value.trim(),pos=ePos.value.trim(),basic=parseFloat(eBasic.value);
+  if(!name||!nrc||!ssn||!pos||!(basic>=0)){alert('Please complete all required fields.');return;}
+  if(state.employees.some(e=>e.nrc===nrc)){alert('An employee with this NRC already exists.');return;}
+  state.employees.push({id:uid(),name,nrc,ssn,pos,basic,hired:eHired.value||curMonth()});
+  ['eName','eNRC','eSSN','ePos','eBasic','eHired'].forEach(i=>document.getElementById(i).value='');
+  save();renderEmployees();
+}
+function delEmployee(id){
+  const e=empById(id);
+  if(!confirm('Delete '+e.name+'? Their advances, charges, attendance and payslip history will remain in records.'))return;
+  state.employees=state.employees.filter(x=>x.id!==id);save();renderEmployees();
+}
+function renderEmployees(){
+  document.getElementById('empCount').textContent=state.employees.length;
+  if(!state.employees.length){empTable.innerHTML='<div class="empty">No employees registered yet.</div>';return;}
+  empTable.innerHTML='<table><tr><th>#</th><th>Name</th><th>NRC</th><th>SSN/NAPSA</th><th>Position</th><th>Basic (ZMW)</th><th>Advance Bal.</th><th>Charges Bal.</th><th>Hired</th><th></th></tr>'+
+   state.employees.map((e,i)=>{const ab=outstandingAdv(e.id),cb=outstandingChg(e.id);
+    return '<tr><td>'+(i+1)+'</td><td><b>'+esc(e.name)+'</b></td><td>'+esc(e.nrc)+'</td><td>'+esc(e.ssn)+'</td><td>'+esc(e.pos)+'</td><td class="money">'+money(e.basic)+'</td>'+
+    '<td class="money">'+(ab>0?'<span class="badge badge-red">'+money(ab)+'</span>':'—')+'</td>'+
+    '<td class="money">'+(cb>0?'<span class="badge badge-purple">'+money(cb)+'</span>':'—')+'</td>'+
+    '<td>'+esc(e.hired)+'</td><td><button class="btn btn-red btn-sm" onclick="delEmployee(\''+e.id+'\')">Delete</button></td></tr>';}).join('')+'</table>';
+}
+
+/* ---------- ATTENDANCE ---------- */
+function renderAttendance(){
+  const m=attMonth.value||curMonth();attMonth.value=m;
+  if(!state.employees.length){attTable.innerHTML='<div class="empty">Register employees first.</div>';return;}
+  const rows=state.employees.map(e=>{
+    const a=(state.attendance[e.id]||{})[m]||{days:0,ot:0};
+    return '<tr><td><b>'+esc(e.name)+'</b></td><td>'+esc(e.nrc)+'</td>'+
+     '<td><input type="number" min="0" max="31" style="width:70px" id="d_'+e.id+'" value="'+a.days+'"></td>'+
+     '<td><input type="number" min="0" step="0.5" style="width:80px" id="o_'+e.id+'" value="'+a.ot+'"></td></tr>';
+  }).join('');
+  attTable.innerHTML='<table><tr><th>Employee</th><th>NRC</th><th>Days Worked</th><th>OT Hours</th></tr>'+rows+'</table>'+
+   '<div class="actions" style="margin-top:12px"><button class="btn btn-green" onclick="saveAttendance()">💾 Save Attendance ('+m+')</button></div>';
+}
+function saveAttendance(){
+  const m=attMonth.value;
+  state.employees.forEach(e=>{
+    state.attendance[e.id]=state.attendance[e.id]||{};
+    state.attendance[e.id][m]={days:parseFloat(document.getElementById('d_'+e.id).value)||0,ot:parseFloat(document.getElementById('o_'+e.id).value)||0};
+  });
+  save();alert('Attendance saved for '+m+'.');
+}
+
+/* ---------- ADVANCES ---------- */
+function addAdvance(){
+  const eid=aEmp.value;if(!eid){alert('Register an employee first.');return;}
+  const amt=parseFloat(aAmt.value);
+  if(!(amt>0)||!aDate.value){alert('Enter a valid date and amount.');return;}
+  state.advances.push({id:uid(),empId:eid,date:aDate.value,amount:amt,repaid:0,note:aNote.value.trim()});
+  aAmt.value='';aNote.value='';save();renderAdvances();
+}
+function delAdvance(id){if(confirm('Delete this advance record?')){state.advances=state.advances.filter(a=>a.id!==id);save();renderAdvances();}}
+function outstandingAdv(id){return state.advances.filter(a=>a.empId===id).reduce((s,a)=>s+(a.amount-a.repaid),0);}
+function renderAdvances(){
+  aEmp.innerHTML=empOptions();
+  if(!state.employees.length){advTable.innerHTML='<div class="empty">Register employees first.</div>';return;}
+  if(!state.advances.length){advTable.innerHTML='<div class="empty">No salary advances recorded.</div>';return;}
+  advTable.innerHTML='<table><tr><th>Date</th><th>Employee</th><th>NRC</th><th>Amount</th><th>Repaid</th><th>Balance</th><th>Note</th><th></th></tr>'+
+   state.advances.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(a=>{
+    const e=empById(a.empId)||{name:'(removed)',nrc:'—'};const bal=a.amount-a.repaid;
+    return '<tr><td>'+a.date+'</td><td><b>'+esc(e.name)+'</b></td><td>'+esc(e.nrc)+'</td><td class="money">'+money(a.amount)+'</td><td class="money">'+money(a.repaid)+'</td>'+
+     '<td class="money"><span class="badge '+(bal>0?'badge-red':'badge-green')+'">'+money(bal)+'</span></td><td>'+esc(a.note||'—')+'</td>'+
+     '<td><button class="btn btn-red btn-sm" onclick="delAdvance(\''+a.id+'\')">Delete</button></td></tr>';
+   }).join('')+'</table>';
+}
+
+/* ---------- CHARGES ---------- */
+function addCharge(){
+  const eid=cEmp.value;if(!eid){alert('Register an employee first.');return;}
+  const amt=parseFloat(cAmt.value);
+  if(!(amt>0)||!cDate.value){alert('Enter a valid date and amount.');return;}
+  state.charges.push({id:uid(),empId:eid,type:cType.value,date:cDate.value,amount:amt,repaid:0,note:cNote.value.trim()});
+  cAmt.value='';cNote.value='';save();renderCharges();
+}
+function delCharge(id){if(confirm('Delete this charge record?')){state.charges=state.charges.filter(c=>c.id!==id);save();renderCharges();}}
+function outstandingChg(id){return state.charges.filter(c=>c.empId===id).reduce((s,c)=>s+(c.amount-c.repaid),0);}
+function renderCharges(){
+  cEmp.innerHTML=empOptions();
+  if(!state.employees.length){chgTable.innerHTML='<div class="empty">Register employees first.</div>';return;}
+  if(!state.charges.length){chgTable.innerHTML='<div class="empty">No charge deductions recorded.</div>';return;}
+  chgTable.innerHTML='<table><tr><th>Date</th><th>Employee</th><th>NRC</th><th>Charge Type</th><th>Amount</th><th>Recovered</th><th>Balance</th><th>Details</th><th></th></tr>'+
+   state.charges.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(c=>{
+    const e=empById(c.empId)||{name:'(removed)',nrc:'—'};const bal=c.amount-c.repaid;
+    const bc={'Shortages':'badge-red','Contamination':'badge-amber','Loss of Company Property':'badge-purple','Other Charge':'badge-green'}[c.type]||'badge-green';
+    return '<tr><td>'+c.date+'</td><td><b>'+esc(e.name)+'</b></td><td>'+esc(e.nrc)+'</td>'+
+     '<td><span class="badge '+bc+'">'+esc(c.type)+'</span></td>'+
+     '<td class="money">'+money(c.amount)+'</td><td class="money">'+money(c.repaid)+'</td>'+
+     '<td class="money">'+(bal>0.005?'<span class="badge badge-red">'+money(bal)+'</span>':'<span class="badge badge-green">Cleared</span>')+'</td>'+
+     '<td>'+esc(c.note||'—')+'</td>'+
+     '<td><button class="btn btn-red btn-sm" onclick="delCharge(\''+c.id+'\')">Delete</button></td></tr>';
+   }).join('')+'</table>';
+}
+
+/* ---------- PAYROLL ---------- */
+function computePay(e,m){
+  const a=(state.attendance[e.id]||{})[m]||{days:0,ot:0};
+  const st=state.settings;
+  const hourly=e.basic/(st.workDays*st.hoursPerDay);
+  const otPay=a.ot*hourly*st.otRate;
+  const housing=e.basic*HOUSING_RATE;
+  const gross=e.basic+housing+LUNCH+TRANSPORT+otPay;
+  const napsa=e.basic*NAPSA_RATE, nhima=e.basic*NHIMA_RATE;
+  const cap=gross*st.maxAdvPct/100;
+  const outst=state.advances.filter(x=>x.empId===e.id).reduce((s,x)=>s+(x.amount-x.repaid),0);
+  const advDed=Math.min(outst,cap);
+  const chgOutst=state.charges.filter(x=>x.empId===e.id).reduce((s,x)=>s+(x.amount-x.repaid),0);
+  const chgDed=Math.min(chgOutst,cap-advDed);
+  const net=gross-napsa-nhima-advDed-chgDed;
+  return {days:a.days,otHours:a.ot,otPay,housing,lunch:LUNCH,transport:TRANSPORT,gross,napsa,nhima,advDed,chgDed,net,outst,chgOutst};
+}
+function allocateAdvances(eid,amount){
+  let rem=amount;
+  for(const a of state.advances.filter(x=>x.empId===eid).sort((x,y)=>x.date.localeCompare(y.date))){
+    if(rem<=0.005)break;const bal=a.amount-a.repaid;const pay=Math.min(bal,rem);a.repaid+=pay;rem-=pay;
+  }
+}
+function allocateCharges(eid,amount){
+  let rem=amount;const detail=[];
+  for(const c of state.charges.filter(x=>x.empId===eid).sort((x,y)=>x.date.localeCompare(y.date))){
+    if(rem<=0.005)break;const bal=c.amount-c.repaid;const pay=Math.min(bal,rem);c.repaid+=pay;rem-=pay;
+    const d=detail.find(x=>x.type===c.type);if(d)d.amt+=pay;else detail.push({type:c.type,amt:pay});
+  }
+  return detail;
+}
+function runPayroll(){
+  if(!state.employees.length){alert('Register employees first.');return;}
+  const m=payMonth.value;if(!m){alert('Select a payroll month.');return;}
+  if(!confirm('Run payroll for '+m+'? This will generate payslips and auto-deduct advances and charges.'))return;
+  state.payslips=state.payslips.filter(p=>p.month!==m);
+  state.employees.forEach(e=>{
+    const p=computePay(e,m);
+    let chgDetail=[];
+    if(p.advDed>0)allocateAdvances(e.id,p.advDed);
+    if(p.chgDed>0)chgDetail=allocateCharges(e.id,p.chgDed);
+    state.payslips.push({id:uid(),month:m,empId:e.id,name:e.name,nrc:e.nrc,ssn:e.ssn,pos:e.pos,...p,chgDetail,runAt:new Date().toISOString()});
+  });
+  save();renderPayroll();alert('Payroll for '+m+' complete. '+state.payslips.filter(p=>p.month===m).length+' payslips generated.');
+}
+function renderPayroll(){
+  const m=payMonth.value||curMonth();payMonth.value=m;
+  document.getElementById('otRateLbl').textContent=state.settings.otRate;
+  const ps=state.payslips.filter(p=>p.month===m);
+  if(!ps.length){payrollTable.innerHTML='<div class="empty">No payroll run for '+m+'. Click “Run Payroll”.</div>';return;}
+  const tot=f=>ps.reduce((s,p)=>s+(p[f]||0),0);
+  payrollTable.innerHTML='<table><tr><th>Employee</th><th>NRC</th><th>Days</th><th>OT hrs</th><th>Basic</th><th>Housing 30%</th><th>Lunch</th><th>Transport</th><th>OT Pay</th><th>Gross</th><th>NAPSA 5%</th><th>NHIMA 1%</th><th>Advance Ded.</th><th>Charges Ded.</th><th>NET PAY</th></tr>'+
+   ps.map(p=>'<tr><td><b>'+esc(p.name)+'</b></td><td>'+esc(p.nrc)+'</td><td>'+p.days+'</td><td>'+p.otHours+'</td>'+
+    '<td class="money">'+money(p.gross-p.housing-p.lunch-p.transport-p.otPay)+'</td><td class="money">'+money(p.housing)+'</td><td class="money">'+money(p.lunch)+'</td><td class="money">'+money(p.transport)+'</td><td class="money">'+money(p.otPay)+'</td>'+
+    '<td class="money"><b>'+money(p.gross)+'</b></td><td class="money">-'+money(p.napsa)+'</td><td class="money">-'+money(p.nhima)+'</td><td class="money">-'+money(p.advDed)+'</td><td class="money">-'+(p.chgDed>0?'<span title="'+(p.chgDetail||[]).map(d=>esc(d.type)+': '+money(d.amt)).join(' | ')+'">'+money(p.chgDed)+'</span>':'0.00')+'</td><td class="money"><b style="color:var(--green)">'+money(p.net)+'</b></td></tr>').join('')+
+   '<tr style="background:var(--green-light);font-weight:700"><td colspan="9">TOTALS</td><td class="money">'+money(tot('gross'))+'</td><td class="money">-'+money(tot('napsa'))+'</td><td class="money">-'+money(tot('nhima'))+'</td><td class="money">-'+money(tot('advDed'))+'</td><td class="money">-'+money(tot('chgDed'))+'</td><td class="money">'+money(tot('net'))+'</td></tr></table>';
+}
+function exportCSV(){
+  const m=payMonth.value;const ps=state.payslips.filter(p=>p.month===m);
+  if(!ps.length){alert('No payslips for '+m+' to export.');return;}
+  const hdr=['Month','Employee','NRC','SSN/NAPSA','Position','Days Worked','OT Hours','Basic','Housing 30%','Lunch','Transport','OT Pay','Gross','NAPSA 5%','NHIMA 1%','Advance Deduction','Charges Deduction','Shortages','Contamination','Loss of Company Property','Other Charges','Net Pay'];
+  const rows=ps.map(p=>{
+    const g=t=>((p.chgDetail||[]).filter(d=>d.type===t).reduce((s,d)=>s+d.amt,0)).toFixed(2);
+    return [p.month,p.name,p.nrc,p.ssn,p.pos,p.days,p.otHours,(p.gross-p.housing-p.lunch-p.transport-p.otPay).toFixed(2),p.housing.toFixed(2),p.lunch.toFixed(2),p.transport.toFixed(2),p.otPay.toFixed(2),p.gross.toFixed(2),p.napsa.toFixed(2),p.nhima.toFixed(2),p.advDed.toFixed(2),p.chgDed.toFixed(2),g('Shortages'),g('Contamination'),g('Loss of Company Property'),g('Other Charge'),p.net.toFixed(2)];
+  });
+  const csv=[hdr,...rows].map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  downloadFile(csv,'text/csv','Mwansa_Payroll_'+m+'.csv');
+}
+function printPayrollSummary(){
+  const m=payMonth.value;const ps=state.payslips.filter(p=>p.month===m);
+  if(!ps.length){alert('No payslips for '+m+'.');return;}
+  document.getElementById('printArea').innerHTML='<div class="pslip"><div class="co"><b>MWANSA AND COMPANY LTD</b><br>Payroll Summary — '+m+'</div>'+
+   '<table>'+ps.map(p=>'<tr><td>'+esc(p.name)+' ('+esc(p.nrc)+')</td><td>Gross: '+money(p.gross)+'</td><td>Deductions: '+money(p.napsa+p.nhima+p.advDed+(p.chgDed||0))+'</td><td><b>Net: '+money(p.net)+'</b></td></tr>').join('')+'</table></div>';
+  window.print();
+}
+
+/* ---------- LEAVE ---------- */
+function addLeave(){
+  const eid=lEmp.value;if(!eid){alert('Register an employee first.');return;}
+  if(!lFrom.value||!lTo.value){alert('Select dates.');return;}
+  const days=Math.round((new Date(lTo.value)-new Date(lFrom.value))/86400000)+1;
+  if(days<1){alert('End date must be on/after start date.');return;}
+  state.leave.push({id:uid(),empId:eid,type:lType.value,from:lFrom.value,to:lTo.value,days});
+  lFrom.value='';lTo.value='';save();renderLeave();
+}
+function delLeave(id){state.leave=state.leave.filter(l=>l.id!==id);save();renderLeave();}
+function renderLeave(){
+  lEmp.innerHTML=empOptions();
+  if(!state.leave.length){leaveTable.innerHTML='<div class="empty">No leave records.</div>';return;}
+  leaveTable.innerHTML='<table><tr><th>Employee</th><th>NRC</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th></th></tr>'+
+   state.leave.slice().sort((a,b)=>b.from.localeCompare(a.from)).map(l=>{
+    const e=empById(l.empId)||{name:'(removed)',nrc:'—'};
+    return '<tr><td><b>'+esc(e.name)+'</b></td><td>'+esc(e.nrc)+'</td><td><span class="badge badge-amber">'+l.type+'</span></td><td>'+l.from+'</td><td>'+l.to+'</td><td>'+l.days+'</td><td><button class="btn btn-red btn-sm" onclick="delLeave(\''+l.id+'\')">Delete</button></td></tr>';
+   }).join('')+'</table>';
+}
+
+/* ---------- REPORTS ---------- */
+function addReport(){
+  const eid=rEmp.value;if(!eid){alert('Register an employee first.');return;}
+  if(!rTitle.value.trim()||!rBody.value.trim()||!rDate.value){alert('Complete all report fields.');return;}
+  state.reports.push({id:uid(),empId:eid,date:rDate.value,title:rTitle.value.trim(),body:rBody.value.trim()});
+  rTitle.value='';rBody.value='';save();renderReports();
+}
+function delReport(id){state.reports=state.reports.filter(r=>r.id!==id);save();renderReports();}
+function renderReports(){
+  rEmp.innerHTML=empOptions();
+  if(!state.reports.length){reportTable.innerHTML='<div class="empty">No work reports submitted.</div>';return;}
+  reportTable.innerHTML='<table><tr><th>Date</th><th>Employee</th><th>Title</th><th>Summary</th><th></th></tr>'+
+   state.reports.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(r=>{
+    const e=empById(r.empId)||{name:'(removed)'};
+    return '<tr><td>'+r.date+'</td><td><b>'+esc(e.name)+'</b></td><td>'+esc(r.title)+'</td><td>'+esc(r.body.length>120?r.body.slice(0,120)+'…':r.body)+'</td><td><button class="btn btn-red btn-sm" onclick="delReport(\''+r.id+'\')">Delete</button></td></tr>';
+   }).join('')+'</table>';
+}
+
+/* ---------- PAYSLIPS ---------- */
+function renderPayslips(){
+  const m=psMonth.value||curMonth();psMonth.value=m;
+  const ps=state.payslips.filter(p=>p.month===m);
+  if(!ps.length){psTable.innerHTML='<div class="empty">No payslips for '+m+'. Run payroll first.</div>';return;}
+  psTable.innerHTML='<table><tr><th>Employee</th><th>NRC</th><th>SSN/NAPSA</th><th>Gross</th><th>Statutory</th><th>Advance Ded.</th><th>Charges Ded.</th><th>Net Pay</th><th></th></tr>'+
+   ps.map(p=>'<tr><td><b>'+esc(p.name)+'</b><br><small style="color:var(--muted)">'+esc(p.pos)+'</small></td><td>'+esc(p.nrc)+'</td><td>'+esc(p.ssn)+'</td>'+
+    '<td class="money">'+money(p.gross)+'</td><td class="money">'+money(p.napsa+p.nhima)+'</td><td class="money">'+money(p.advDed)+'</td>'+
+    '<td class="money">'+(p.chgDed>0?'<span class="badge badge-purple">'+money(p.chgDed)+'</span>':'—')+'</td>'+
+    '<td class="money"><b style="color:var(--green)">'+money(p.net)+'</b></td>'+
+    '<td><button class="btn btn-green btn-sm" onclick="printPayslip(\''+p.id+'\')">🖨 Print Payslip</button></td></tr>').join('')+'</table>';
+}
+function printPayslip(id){
+  const p=state.payslips.find(x=>x.id===id);if(!p)return;
+  const basic=p.gross-p.housing-p.lunch-p.transport-p.otPay;
+  const chgRows=(p.chgDetail||[]).map(d=>'<tr><td>'+esc(d.type)+'</td><td class="right">-'+money(d.amt)+'</td></tr>').join('');
+  const totDed=p.napsa+p.nhima+p.advDed+(p.chgDed||0);
+  document.getElementById('printArea').innerHTML='<div class="pslip">'+
+   '<div class="co"><b>MWANSA AND COMPANY LTD</b><br>Human Resources AutoPilot</div>'+
+   '<div class="ttl">Employee Payslip — '+p.month+'</div>'+
+   '<table><tr><td><b>Name:</b></td><td>'+esc(p.name)+'</td><td><b>NRC:</b></td><td>'+esc(p.nrc)+'</td></tr>'+
+   '<tr><td><b>Position:</b></td><td>'+esc(p.pos)+'</td><td><b>SSN/NAPSA:</b></td><td>'+esc(p.ssn)+'</td></tr>'+
+   '<tr><td><b>Days Worked:</b></td><td>'+p.days+'</td><td><b>OT Hours:</b></td><td>'+p.otHours+'</td></tr></table>'+
+   '<br><table><tr><th>Earnings</th><th class="right">Amount (ZMW)</th></tr>'+
+   '<tr><td>Basic Salary</td><td class="right">'+money(basic)+'</td></tr>'+
+   '<tr><td>Housing Allowance (30%)</td><td class="right">'+money(p.housing)+'</td></tr>'+
+   '<tr><td>Lunch Allowance</td><td class="right">'+money(p.lunch)+'</td></tr>'+
+   '<tr><td>Transport Allowance</td><td class="right">'+money(p.transport)+'</td></tr>'+
+   '<tr><td>Overtime ('+p.otHours+' hrs)</td><td class="right">'+money(p.otPay)+'</td></tr>'+
+   '<tr><th>GROSS PAY</th><th class="right">'+money(p.gross)+'</th></tr>'+
+   '<tr><th>Deductions</th><th class="right">Amount (ZMW)</th></tr>'+
+   '<tr><td>NAPSA (5%)</td><td class="right">-'+money(p.napsa)+'</td></tr>'+
+   '<tr><td>NHIMA (1%)</td><td class="right">-'+money(p.nhima)+'</td></tr>'+
+   '<tr><td>Salary Advance Recovery</td><td class="right">-'+money(p.advDed)+'</td></tr>'+
+   (chgRows?'<tr><th colspan="2" style="background:#f0e8f7">Charges Deductions</th></tr>'+chgRows:'')+
+   '<tr><th>TOTAL DEDUCTIONS</th><th class="right">-'+money(totDed)+'</th></tr>'+
+   '<tr><th>NET PAY</th><th class="right">'+money(p.net)+'</th></tr></table>'+
+   (p.outst>0.005||p.chgOutst>0.005?'<p style="margin-top:10px;font-size:11px">Balances carried forward — Advance: '+money(p.outst)+' · Charges: '+money(p.chgOutst)+'</p>':'')+
+   '<p style="margin-top:18px;font-size:11px">Generated by Mwansa &amp; Company Ltd HR AutoPilot on '+new Date(p.runAt).toLocaleString()+'</p></div>';
+  window.print();
+}
+
+/* ---------- DASHBOARD ---------- */
+function renderDashboard(){
+  const m=dashMonth.value||curMonth();dashMonth.value=m;
+  const ps=state.payslips.filter(p=>p.month===m);
+  const totNet=ps.reduce((s,p)=>s+p.net,0);
+  const totGross=ps.reduce((s,p)=>s+p.gross,0);
+  const advOut=state.employees.reduce((s,e)=>s+outstandingAdv(e.id),0);
+  const chgOut=state.employees.reduce((s,e)=>s+outstandingChg(e.id),0);
+  const totOT=ps.reduce((s,p)=>s+p.otHours,0);
+  const attHrs=state.employees.reduce((s,e)=>{const a=(state.attendance[e.id]||{})[m];return s+(a?a.days*state.settings.hoursPerDay+a.ot:0);},0);
+  const onLeave=state.leave.filter(l=>l.from<=m+'-31'&&l.to>=m+'-01').length;
+  const stat=(l,v,sub)=>'<div class="stat"><div class="label">'+l+'</div><div class="value">'+v+'</div><div class="sub">'+(sub||'')+'</div></div>';
+  document.getElementById('dashStats').innerHTML=
+   stat('Employees',state.employees.length+' / 50','of capacity')+
+   stat('Payroll Month',m,'')+
+   stat('Gross Payroll',money(totGross),ps.length+' payslips')+
+   stat('Net Payroll',money(totNet),'payable for '+m)+
+   stat('Total Hours Logged',attHrs.toLocaleString(),'incl. '+totOT+' OT hrs')+
+   stat('Advances Outstanding',money(advOut),state.advances.filter(a=>a.amount-a.repaid>0).length+' open advances')+
+   stat('Charges Outstanding',money(chgOut),state.charges.filter(c=>c.amount-c.repaid>0).length+' open charges')+
+   stat('Work Reports',state.reports.length,'submitted · '+onLeave+' on leave');
+  document.getElementById('dashRecent').innerHTML=ps.length?
+   '<table><tr><th>Employee</th><th>NRC</th><th class="right">Net Pay</th></tr>'+ps.slice(0,8).map(p=>'<tr><td>'+esc(p.name)+'</td><td>'+esc(p.nrc)+'</td><td class="right money">'+money(p.net)+'</td></tr>').join('')+'</table>':
+   '<div class="empty">No payroll run for '+m+' yet.</div>';
+  const advRows=state.employees.map(e=>({e,ab:outstandingAdv(e.id),cb:outstandingChg(e.id)})).filter(x=>x.ab>0.005||x.cb>0.005);
+  document.getElementById('dashAdv').innerHTML=advRows.length?
+   '<table><tr><th>Employee</th><th class="right">Advance Bal.</th><th class="right">Charges Bal.</th></tr>'+advRows.map(x=>'<tr><td>'+esc(x.e.name)+'</td><td class="right money">'+(x.ab>0.005?'<span class="badge badge-red">'+money(x.ab)+'</span>':'—')+'</td><td class="right money">'+(x.cb>0.005?'<span class="badge badge-purple">'+money(x.cb)+'</span>':'—')+'</td></tr>').join('')+'</table>':
+   '<div class="empty">No outstanding advances or charges.</div>';
+}
+
+/* ---------- BACKUP / SETTINGS ---------- */
+function renderBackup(){
+  const s=state.settings;
+  sMaxAdv.value=s.maxAdvPct;sOtRate.value=s.otRate;sWorkDays.value=s.workDays;sHoursDay.value=s.hoursPerDay;
+}
+function saveSettings(){
+  state.settings={maxAdvPct:Math.min(100,Math.max(1,parseFloat(sMaxAdv.value)||40)),otRate:parseFloat(sOtRate.value)||1.5,workDays:parseInt(sWorkDays.value)||26,hoursPerDay:parseInt(sHoursDay.value)||8};
+  save();alert('Settings saved.');
+}
+function downloadFile(content,type,filename){
+  const blob=new Blob([content],{type});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+function downloadBackup(){downloadFile(JSON.stringify(state,null,2),'application/json','Mwansa_HR_Backup_'+new Date().toISOString().slice(0,10)+'.json');}
+function restoreBackup(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const s=JSON.parse(r.result);
+    if(!Array.isArray(s.employees))throw 0;
+    state=Object.assign({},DEFAULTS,s,{settings:Object.assign({},DEFAULTS.settings,s.settings||{})});
+    save();showView('dashboard');alert('Backup restored successfully.');
+  }catch(e){alert('Invalid backup file.');}};
+  r.readAsText(f);ev.target.value='';
+}
+function wipeData(){
+  if(confirm('Erase ALL data? This cannot be undone. Download a backup first!')&&confirm('Are you absolutely sure?')){
+    localStorage.removeItem(LS_KEY);state=JSON.parse(JSON.stringify(DEFAULTS));save();showView('dashboard');
+  }
+}
+
+/* ---------- INIT ---------- */
+const today=new Date();const mStr=today.toISOString().slice(0,7);
+['dashMonth','payMonth','attMonth','psMonth'].forEach(i=>document.getElementById(i).value=mStr);
+aDate.value=new Date().toISOString().slice(0,10);cDate.value=aDate.value;rDate.value=aDate.value;
+buildNav();save();showView('dashboard');
+</script>
+</body>
+</html>
